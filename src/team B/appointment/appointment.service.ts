@@ -130,7 +130,7 @@ export class AppointmentService {
   nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
-  isApproved, inprogress, complete, exit,
+  isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
 } = savedAppointment;
  
 const masterRecordData:Partial<MasterRecord> = {
@@ -138,7 +138,7 @@ const masterRecordData:Partial<MasterRecord> = {
   nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
-  isApproved, inprogress, complete, exit,
+  isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
   recordType: 'preapproval',
   visitorId: undefined,
   appointmentId: savedAppointment.id
@@ -423,7 +423,7 @@ await this.masterRecordService.upsert(masterRecordData);
   nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,  
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
-  isApproved, inprogress, complete, exit,
+  isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
 } = savedAppointment;
  
 const masterRecordData: Partial<MasterRecord> = {
@@ -431,7 +431,7 @@ const masterRecordData: Partial<MasterRecord> = {
   nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
-  isApproved, inprogress, complete, exit,
+  isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
   recordType: 'preapproval',
   visitorId: undefined,
   appointmentId: savedAppointment.id

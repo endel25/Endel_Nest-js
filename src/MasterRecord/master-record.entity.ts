@@ -95,6 +95,12 @@ personnameid: number;
   @Column({ default: false })
   isformcompleted: boolean;
 
+    @Column({ type: 'boolean', default: false })
+  ndaApproved: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  SaftyApproval: boolean;
+
 
   @Column({ type: 'varchar' })
   recordType: 'spot' | 'preapproval';
