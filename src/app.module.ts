@@ -20,7 +20,7 @@ import { MasterRecordModule } from './MasterRecord/master-record.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'endel@123',
+      password: 'ami@123',
       database: 'CURD',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
