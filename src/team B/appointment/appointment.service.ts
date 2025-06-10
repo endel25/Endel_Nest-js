@@ -7,7 +7,7 @@ import { VisitorMailService } from './visitor-mail/visitor-mail.service';
 import { pagination } from './appointment_dto/pagination.dto';
 import { MasterRecordService } from 'src/MasterRecord/master-record.service';
 import { MasterRecord } from 'src/MasterRecord/master-record.entity';
-
+ 
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -18,15 +18,15 @@ export class AppointmentService {
     private readonly masterRecordService: MasterRecordService,
    
   ) {}
-
+ 
   async createOrUpdateAppointment(data: Partial<Appointment>): Promise<Appointment> {
     try {
       console.log('📥 Incoming appointment data:', JSON.stringify(data, null, 2));
-
+ 
       if (!data.email || !data.date || !data.time) {
         throw new BadRequestException('Missing required fields: email, date, time');
       }
-
+ 
       if (Array.isArray(data.personname)) {
         console.warn('⚠️ personname is an array in service:', data.personname);
         data.personname = data.personname.length > 0 ? data.personname[0] : '';
@@ -35,7 +35,7 @@ export class AppointmentService {
         console.warn('⚠️ department is an array in service:', data.department);
         data.department = data.department.length > 0 ? data.department[0] : '';
       }
-
+ 
       const existingAppointment = await this.appointmentRepo.findOne({
         where: {
           email: data.email,
@@ -43,9 +43,9 @@ export class AppointmentService {
           time: data.time,
         },
       });
-
+ 
       let savedAppointment: Appointment;
-
+ 
       if (existingAppointment) {
         savedAppointment = await this.appointmentRepo.save({
           ...existingAppointment,
@@ -99,10 +99,10 @@ export class AppointmentService {
           driverphoto: data.driverphoto || '',
           isformcompleted: false,
         });
-
+ 
         savedAppointment = await this.appointmentRepo.save(appointment);
         console.log('💾 Saved new appointment, durationunit:', savedAppointment.durationunit, JSON.stringify(savedAppointment, null, 2));
-
+ 
         if (savedAppointment.email && savedAppointment.date && savedAppointment.time) {
           const params = new URLSearchParams({
             email: savedAppointment.email,
@@ -123,7 +123,7 @@ export class AppointmentService {
           console.log(`📩 Email sent to ${savedAppointment.email} with form link: ${formLink}`);
         }
       }
-
+ 
       // Save to MasterRecord with recordType 'preapproval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
@@ -132,25 +132,25 @@ export class AppointmentService {
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,
 } = savedAppointment;
-
+ 
 const masterRecordData:Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
-  isApproved, inprogress, complete, exit, 
+  isApproved, inprogress, complete, exit,
   recordType: 'preapproval',
   visitorId: undefined,
   appointmentId: savedAppointment.id
 };
-
-
+ 
+ 
 await this.masterRecordService.upsert(masterRecordData);
-
-
-
-
-
+ 
+ 
+ 
+ 
+ 
       await this.visitorMailService.sendVisitorQRCode(savedAppointment);
       return savedAppointment;
     } catch (error) {
@@ -161,19 +161,32 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to create or update appointment: ' + error.message);
     }
   }
-
+ 
   async updateAppointment(id: string, data: Partial<Appointment>): Promise<Appointment> {
     const queryRunner = this.appointmentRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+ 
     try {
       const appointment = await queryRunner.manager.findOne(Appointment, { where: { id: Number(id) } });
       if (!appointment) {
         throw new BadRequestException(`Appointment with ID ${id} not found.`);
       }
-
-      const updatedAppointment = await queryRunner.manager.save(Appointment, {
+ 
+      // Handle personnameid separately to ensure it's a valid integer
+      let personnameid: number | undefined = appointment.personnameid;
+      if (data.personnameid !== undefined) {
+        // Convert to number and validate
+        const parsedId = Number(data.personnameid);
+        if (!isNaN(parsedId)) {
+          personnameid = parsedId;
+        } else if (String(data.personnameid).trim() === '') {
+          personnameid = undefined; // Set to undefined if empty string is provided
+        }
+      }
+ 
+      // Create update object with proper null/undefined handling
+      const updateData = {
         ...appointment,
         firstname: data.firstname ?? appointment.firstname,
         lastname: data.lastname ?? appointment.lastname,
@@ -187,7 +200,7 @@ await this.masterRecordService.upsert(masterRecordData);
         photo: data.photo ?? appointment.photo,
         visit: data.visit ?? appointment.visit,
         personname: data.personname ?? appointment.personname,
-        personnameid: data.personnameid !== undefined ? data.personnameid : appointment.personnameid,
+        personnameid: personnameid,
         department: data.department ?? appointment.department,
         durationtime: data.durationtime ?? appointment.durationtime,
         durationunit: data.durationunit ?? appointment.durationunit,
@@ -198,21 +211,21 @@ await this.masterRecordService.upsert(masterRecordData);
         drivernationalid: data.drivernationalid ?? appointment.drivernationalid,
         driverphoto: data.driverphoto ?? appointment.driverphoto,
         notes: data.notes ?? appointment.notes,
-        isformcompleted: data.isformcompleted ?? appointment.isformcompleted,
-      });
-
+        isformcompleted: data.isformcompleted ?? appointment.isformcompleted
+      };
+ 
+      const updatedAppointment = await queryRunner.manager.save(Appointment, updateData);
+ 
       // Save to MasterRecord with recordType 'preapproval'
-     const masterRecordData = {
-  ...updatedAppointment,
-  recordType: 'preapproval' as const,
-  visitorId: undefined,
-  appointmentId: updatedAppointment.id,
-};
-
-await this.masterRecordService.upsert(masterRecordData);
-
-
-
+      const masterRecordData = {
+        ...updatedAppointment,
+        recordType: 'preapproval' as const,
+        visitorId: undefined,
+        appointmentId: updatedAppointment.id,
+      };
+ 
+      await this.masterRecordService.upsert(masterRecordData);
+ 
       await queryRunner.commitTransaction();
       console.log('✅ Transaction committed, updated appointment, durationunit:', updatedAppointment.durationunit, JSON.stringify(updatedAppointment, null, 2));
       await this.visitorMailService.sendVisitorQRCode(updatedAppointment);
@@ -228,12 +241,12 @@ await this.masterRecordService.upsert(masterRecordData);
       await queryRunner.release();
     }
   }
-
+ 
   async updateNdaStatus(email: string, date: string, time: string, ndaApproved: boolean): Promise<Appointment> {
     const queryRunner = this.appointmentRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+ 
     try {
       const appointment = await queryRunner.manager.findOne(Appointment, {
         where: { email, date, time },
@@ -241,12 +254,12 @@ await this.masterRecordService.upsert(masterRecordData);
       if (!appointment) {
         throw new BadRequestException(`Appointment with email ${email}, date ${date}, time ${time} not found.`);
       }
-
+ 
       const updatedAppointment = await queryRunner.manager.save(Appointment, {
         ...appointment,
         ndaApproved: ndaApproved,
       });
-
+ 
       // Save to MasterRecord with recordType 'preapproval'
       const masterRecordData = {
   ...updatedAppointment,
@@ -254,11 +267,11 @@ await this.masterRecordService.upsert(masterRecordData);
   visitorId: undefined,
   appointmentId: updatedAppointment.id,
 };
-
+ 
 await this.masterRecordService.upsert(masterRecordData);
-
-
-
+ 
+ 
+ 
       await queryRunner.commitTransaction();
       console.log('✅ Transaction committed, updated NDA status, ndaApproved:', updatedAppointment.ndaApproved, JSON.stringify(updatedAppointment, null, 2));
       return updatedAppointment;
@@ -273,12 +286,12 @@ await this.masterRecordService.upsert(masterRecordData);
       await queryRunner.release();
     }
   }
-
+ 
   async updateSafetyStatus(email: string, date: string, time: string, SaftyApproval: boolean): Promise<Appointment> {
     const queryRunner = this.appointmentRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+ 
     try {
       const appointment = await queryRunner.manager.findOne(Appointment, {
         where: { email, date, time },
@@ -286,24 +299,22 @@ await this.masterRecordService.upsert(masterRecordData);
       if (!appointment) {
         throw new BadRequestException(`Appointment with email ${email}, date ${date}, time ${time} not found.`);
       }
-
+ 
       const updatedAppointment = await queryRunner.manager.save(Appointment, {
         ...appointment,
         SaftyApproval: SaftyApproval,
       });
-
+ 
       // Save to MasterRecord with recordType 'preapproval'
       const masterRecordData = {
-  ...updatedAppointment,
-  recordType: 'preapproval' as const,
-  visitorId: undefined,
-  appointmentId: updatedAppointment.id,
-};
-
-await this.masterRecordService.upsert(masterRecordData);
-
-
-
+        ...updatedAppointment,
+        recordType: 'preapproval' as const,
+        visitorId: undefined,
+        appointmentId: updatedAppointment.id
+      };
+ 
+      await this.masterRecordService.upsert(masterRecordData);
+ 
       await queryRunner.commitTransaction();
       console.log('✅ Transaction committed, updated safety acknowledgment status, SaftyApproval:', updatedAppointment.SaftyApproval, JSON.stringify(updatedAppointment, null, 2));
       return updatedAppointment;
@@ -318,23 +329,23 @@ await this.masterRecordService.upsert(masterRecordData);
       await queryRunner.release();
     }
   }
-
+ 
   async updateGatepassStatus(id: string): Promise<Appointment> {
     const queryRunner = this.appointmentRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+ 
     try {
       const appointment = await queryRunner.manager.findOne(Appointment, { where: { id: Number(id) } });
       if (!appointment) {
         throw new BadRequestException(`Appointment with ID ${id} not found.`);
       }
-
+ 
       const updatedAppointment = await queryRunner.manager.save(Appointment, {
         ...appointment,
         // Add specific gatepass logic if needed; assuming no status change for simplicity
       });
-
+ 
       // Save to MasterRecord with recordType 'preapproval'
      const masterRecordData = {
   ...updatedAppointment,
@@ -342,11 +353,11 @@ await this.masterRecordService.upsert(masterRecordData);
   visitorId: undefined,
   appointmentId: updatedAppointment.id,
 };
-
+ 
 await this.masterRecordService.upsert(masterRecordData);
-
-
-
+ 
+ 
+ 
       await queryRunner.commitTransaction();
       console.log('✅ Transaction committed, updated gatepass status, durationunit:', updatedAppointment.durationunit, JSON.stringify(updatedAppointment, null, 2));
       return updatedAppointment;
@@ -361,20 +372,20 @@ await this.masterRecordService.upsert(masterRecordData);
       await queryRunner.release();
     }
   }
-
+ 
   async updateStatus(id: string, status: string, resetStatus?: { complete?: boolean; exit?: boolean }): Promise<Appointment> {
     const queryRunner = this.appointmentRepo.manager.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+ 
     try {
       const appointment = await queryRunner.manager.findOne(Appointment, { where: { id: Number(id) } });
       if (!appointment) {
         throw new BadRequestException(`Appointment with ID ${id} not found`);
       }
-
+ 
       console.log('Updating status for appointment:', id, 'to:', status, 'resetStatus:', resetStatus);
-
+ 
       switch (status.toLowerCase()) {
         case 'approve':
           appointment.isApproved = true;
@@ -403,9 +414,9 @@ await this.masterRecordService.upsert(masterRecordData);
         default:
           throw new BadRequestException(`Invalid status: ${status}`);
       }
-
+ 
       const savedAppointment = await queryRunner.manager.save(Appointment, appointment);
-
+ 
       // Save to MasterRecord with recordType 'preapproval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
@@ -414,7 +425,7 @@ await this.masterRecordService.upsert(masterRecordData);
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,
 } = savedAppointment;
-
+ 
 const masterRecordData: Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid, department, durationtime,
@@ -425,13 +436,13 @@ const masterRecordData: Partial<MasterRecord> = {
   visitorId: undefined,
   appointmentId: savedAppointment.id
 };
-
-
+ 
+ 
 await this.masterRecordService.upsert(masterRecordData);
-
-
-
-
+ 
+ 
+ 
+ 
       await queryRunner.commitTransaction();
       console.log('✅ Transaction committed, updated status:', savedAppointment);
       return savedAppointment;
@@ -446,7 +457,7 @@ await this.masterRecordService.upsert(masterRecordData);
       await queryRunner.release();
     }
   }
-
+ 
   // Added missing methods
   async getAppointmentsByEmail(email: string): Promise<Appointment[]> {
     try {
@@ -458,12 +469,12 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to retrieve appointments by email: ' + error.message);
     }
   }
-
+ 
   async getAllAppointments(pagination?: pagination): Promise<{ appointments: Appointment[], total: number }> {
     try {
       console.log('📋 Fetching appointments with pagination:', JSON.stringify(pagination, null, 2));
       const query = this.appointmentRepo.createQueryBuilder('appointment');
-
+ 
       if (pagination && pagination.page && pagination.limit) {
         const page = pagination.page;
         const limit = pagination.limit;
@@ -472,7 +483,7 @@ await this.masterRecordService.upsert(masterRecordData);
       } else {
         console.log('📄 No pagination applied, fetching all appointments');
       }
-
+ 
       const [appointments, total] = await query.getManyAndCount();
       console.log(`📋 Retrieved ${appointments.length} appointments, total: ${total}, durationunit sample: ${appointments[0]?.durationunit}`);
       return { appointments, total };
@@ -481,7 +492,7 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to retrieve appointments: ' + error.message);
     }
   }
-
+ 
   async getAppointmentByContactNumber(contactnumber: string): Promise<Appointment> {
     try {
       const appointment = await this.appointmentRepo.findOne({
@@ -501,10 +512,16 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to retrieve appointment: ' + error.message);
     }
   }
-
+ 
   async getAppointmentById(id: string): Promise<Appointment> {
     try {
-      const appointment = await this.appointmentRepo.findOne({ where: { id: Number(id) } });
+      // Validate and convert ID
+      const appointmentId = Number(id);
+      if (isNaN(appointmentId)) {
+        throw new BadRequestException(`Invalid appointment ID: ${id}`);
+      }
+ 
+      const appointment = await this.appointmentRepo.findOne({ where: { id: appointmentId } });
       if (!appointment) {
         throw new BadRequestException(`Appointment with ID ${id} not found.`);
       }
@@ -518,7 +535,7 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to retrieve appointment: ' + error.message);
     }
   }
-
+ 
   async checkFormStatus(email: string, date: string, time: string): Promise<boolean> {
     try {
       const appointment = await this.appointmentRepo.findOne({
@@ -531,17 +548,26 @@ await this.masterRecordService.upsert(masterRecordData);
       throw new InternalServerErrorException('Failed to check form status: ' + error.message);
     }
   }
-
+ 
   async deleteAppointment(id: string): Promise<void> {
   const appointment = await this.appointmentRepo.findOne({ where: { id: Number(id) } });
   if (!appointment) {
     throw new BadRequestException(`Appointment with ID ${id} not found`);
   }
-
+ 
   // Delete the appointment
   await this.appointmentRepo.remove(appointment);
-
+ 
   // Optional: delete related master record
 await this.masterRecordService.deleteByAppointmentId(Number(id));}
-
+ 
+  async findOne(options: { where: Partial<Appointment> }): Promise<Appointment | null> {
+    try {
+      const appointment = await this.appointmentRepo.findOne(options);
+      return appointment;
+    } catch (error) {
+      console.error('❌ Error in findOne:', error);
+      throw new InternalServerErrorException('Failed to find appointment: ' + error.message);
+    }
+  }
 }
