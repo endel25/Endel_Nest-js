@@ -59,6 +59,7 @@ export class AppointmentService {
           notes: data.notes || existingAppointment.notes,
           visit: data.visit || existingAppointment.visit,
           personname: data.personname || existingAppointment.personname,
+          personnameid: data.personnameid !== undefined ? data.personnameid : existingAppointment.personnameid,
           department: data.department || existingAppointment.department,
           durationtime: data.durationtime || existingAppointment.durationtime,
           durationunit: data.durationunit || existingAppointment.durationunit,
@@ -86,6 +87,7 @@ export class AppointmentService {
           notes: data.notes || '',
           visit: data.visit || '',
           personname: data.personname || '',
+          personnameid: data.personnameid !== undefined ? data.personnameid : undefined,
           department: data.department || '',
           durationtime: data.durationtime || '',
           durationunit: data.durationunit || '',
@@ -111,7 +113,7 @@ export class AppointmentService {
             gender: savedAppointment.gender || '',
             contactnumber: savedAppointment.contactnumber || '',
           });
-          const formLink = `https://192.168.1.82:3001/visitorverify.html?${params.toString()}`;
+          const formLink = `https://192.168.1.57:3001/visitorverify.html?${params.toString()}`;
           await this.mailService.sendAppointmentEmail(
             savedAppointment.email,
             savedAppointment.date,
@@ -125,7 +127,7 @@ export class AppointmentService {
       // Save to MasterRecord with recordType 'preapproval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,
@@ -133,7 +135,7 @@ export class AppointmentService {
 
 const masterRecordData:Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit, 
@@ -185,6 +187,7 @@ await this.masterRecordService.upsert(masterRecordData);
         photo: data.photo ?? appointment.photo,
         visit: data.visit ?? appointment.visit,
         personname: data.personname ?? appointment.personname,
+        personnameid: data.personnameid !== undefined ? data.personnameid : appointment.personnameid,
         department: data.department ?? appointment.department,
         durationtime: data.durationtime ?? appointment.durationtime,
         durationunit: data.durationunit ?? appointment.durationunit,
@@ -406,7 +409,7 @@ await this.masterRecordService.upsert(masterRecordData);
       // Save to MasterRecord with recordType 'preapproval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,  
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,
@@ -414,7 +417,7 @@ await this.masterRecordService.upsert(masterRecordData);
 
 const masterRecordData: Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid, department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,

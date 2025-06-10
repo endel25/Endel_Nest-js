@@ -39,6 +39,10 @@ export class Visitor {
     personname: string;
 
     @Column({ nullable: true })
+personnameid: number;
+
+
+    @Column({ nullable: true })
     department: string;
 
     @Column({ nullable: true })

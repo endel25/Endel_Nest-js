@@ -51,6 +51,7 @@ async createOrUpdateAppointment(
       return field; // Return as-is if it's a string
     };
 
+    appointmentData.personnameid = parseInt(appointmentData.personnameid as any) || undefined;
     appointmentData.personname = normalizeField(appointmentData.personname);
     appointmentData.department = normalizeField(appointmentData.department);
 

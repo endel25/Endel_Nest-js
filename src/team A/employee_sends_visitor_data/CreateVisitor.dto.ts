@@ -10,6 +10,7 @@ export class CreateVisitorDto {
     photo: string;
     visit: string;
     personname: string;
+    personnameid?: number;
     department: string;
     durationtime: string;
     durationunit: string;

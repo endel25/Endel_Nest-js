@@ -48,7 +48,8 @@ export class VisitorService {
     // Save to MasterRecord with recordType 'spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid,
+  department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit
@@ -116,7 +117,8 @@ await this.masterRecordService.upsert(masterRecordData);
     // Save to MasterRecord with recordType 'spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid,
+  department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit
@@ -124,7 +126,8 @@ await this.masterRecordService.upsert(masterRecordData);
 
 const masterRecordData: Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid,
+  department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit,
@@ -181,7 +184,8 @@ await this.masterRecordService.upsert(masterRecordData);
     // Save to MasterRecord with recordType 'spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid,
+  department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit
@@ -189,7 +193,8 @@ await this.masterRecordService.upsert(masterRecordData);
 
 const masterRecordData: Partial<MasterRecord> = {
   firstname, lastname, gender, contactnumber, email, date, time,
-  nationalid, photo, visit, personname, department, durationtime,
+  nationalid, photo, visit, personname,personnameid,
+  department, durationtime,
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit,

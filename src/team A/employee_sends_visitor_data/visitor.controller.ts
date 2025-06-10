@@ -56,6 +56,7 @@ export class VisitorController {
       photo: files.photoFile && files.photoFile[0] ? files.photoFile[0].filename : body.photo,
       visit: body.visit,
       personname: body.personname,
+      personnameid: body.personnameid ? parseInt(body.personnameid) : undefined,
       department: body.department,
       durationtime: body.durationtime,
       durationunit: body.durationunit,
@@ -145,7 +146,10 @@ export class VisitorController {
       inprogress: body.inprogress !== undefined ? (typeof body.inprogress === 'string' ? body.inprogress === 'true' : body.inprogress) : existingVisitor.inprogress,
       complete: body.complete !== undefined ? (typeof body.complete === 'string' ? body.complete === 'true' : body.complete) : existingVisitor.complete,
       exit: body.exit !== undefined ? (typeof body.exit === 'string' ? body.exit === 'true' : body.exit) : existingVisitor.exit,
-    };
+      personnameid: typeof body.personnameid === 'string'
+      ? parseInt(body.personnameid)
+      : body.personnameid ?? existingVisitor.personnameid,
+        };
 
     console.log('Mapped DTO for PATCH:', visitorData);
 
