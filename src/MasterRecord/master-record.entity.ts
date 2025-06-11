@@ -103,7 +103,7 @@ personnameid: number;
 
 
   @Column({ type: 'varchar' })
-  recordType: 'spot' | 'preapproval';
+  recordType: 'Spot' | 'Pre-Approval';
 
   // ✅ Add foreign key to Visitor
   @ManyToOne(() => Visitor, { nullable: true, onDelete: 'SET NULL' })

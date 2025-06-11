@@ -18,18 +18,18 @@ export class MasterRecordService {
   async upsert(masterRecord: Partial<MasterRecord>): Promise<MasterRecord> {
     let existingRecord: MasterRecord | null = null;
 
-    if (masterRecord.recordType === 'spot') {
+    if (masterRecord.recordType === 'Spot') {
       masterRecord.appointmentId = undefined;
       if (masterRecord.visitorId) {
         existingRecord = await this.masterRecordRepository.findOne({
-          where: { visitorId: masterRecord.visitorId, recordType: 'spot' },
+          where: { visitorId: masterRecord.visitorId, recordType: 'Spot' },
         });
       }
-    } else if (masterRecord.recordType === 'preapproval') {
+    } else if (masterRecord.recordType === 'Pre-Approval') {
       masterRecord.visitorId = undefined;
       if (masterRecord.appointmentId) {
         existingRecord = await this.masterRecordRepository.findOne({
-          where: { appointmentId: masterRecord.appointmentId, recordType: 'preapproval' },
+          where: { appointmentId: masterRecord.appointmentId, recordType: 'Pre-Approval' },
         });
       }
     }
@@ -51,7 +51,7 @@ export class MasterRecordService {
     const records = await this.masterRecordRepository.find({
       where: { contactnumber },
     });
-    // Return the first preapproval record, or the first record if none are preapproval
-    return records.find(record => record.recordType === 'preapproval') || records[0] || null;
+    // Return the first Pre-Approval record, or the first record if none are Pre-Approval
+    return records.find(record => record.recordType === 'Pre-Approval') || records[0] || null;
   }
 }

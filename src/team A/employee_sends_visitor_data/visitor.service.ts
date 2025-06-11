@@ -45,7 +45,7 @@ export class VisitorService {
     const newVisitor = this.visitorRepository.create(cleanedData);
     const savedVisitor = await this.visitorRepository.save(newVisitor);
 
-    // Save to MasterRecord with recordType 'spot'
+    // Save to MasterRecord with recordType 'Spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid,
@@ -61,7 +61,7 @@ const masterRecordData: Partial<MasterRecord> = {
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit,
-  recordType: 'spot', // ← string literal type inferred properly here
+  recordType: 'Spot', // ← string literal type inferred properly here
   visitorId: savedVisitor.id,
   appointmentId: undefined,
 };
@@ -114,7 +114,7 @@ await this.masterRecordService.upsert(masterRecordData);
     const updated = Object.assign(visitor, cleanedData);
     const savedVisitor = await this.visitorRepository.save(updated); // Fixed typo
 
-    // Save to MasterRecord with recordType 'spot'
+    // Save to MasterRecord with recordType 'Spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid,
@@ -131,7 +131,7 @@ const masterRecordData: Partial<MasterRecord> = {
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit,
-  recordType: 'spot', // ← string literal type inferred properly here
+  recordType: 'Spot', // ← string literal type inferred properly here
   visitorId: savedVisitor.id,
   appointmentId: undefined,
 };
@@ -181,7 +181,7 @@ await this.masterRecordService.upsert(masterRecordData);
     const savedVisitor = await this.visitorRepository.save(visitor);
     console.log('Saved visitor with updated status:', savedVisitor);
 
-    // Save to MasterRecord with recordType 'spot'
+    // Save to MasterRecord with recordType 'Spot'
     const {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid,
@@ -198,7 +198,7 @@ const masterRecordData: Partial<MasterRecord> = {
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isApproved,
   inprogress, complete, exit,
-  recordType: 'spot', // ← string literal type inferred properly here
+  recordType: 'Spot', // ← string literal type inferred properly here
   visitorId: savedVisitor.id,
   appointmentId: undefined,
 };

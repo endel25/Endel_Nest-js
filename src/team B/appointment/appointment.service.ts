@@ -124,7 +124,7 @@ export class AppointmentService {
         }
       }
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid, department, durationtime,
@@ -139,7 +139,7 @@ const masterRecordData:Partial<MasterRecord> = {
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
-  recordType: 'preapproval',
+  recordType: 'Pre-Approval',
   visitorId: undefined,
   appointmentId: savedAppointment.id
 };
@@ -216,10 +216,10 @@ await this.masterRecordService.upsert(masterRecordData);
  
       const updatedAppointment = await queryRunner.manager.save(Appointment, updateData);
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
       const masterRecordData = {
         ...updatedAppointment,
-        recordType: 'preapproval' as const,
+        recordType: 'Pre-Approval' as const,
         visitorId: undefined,
         appointmentId: updatedAppointment.id,
       };
@@ -260,10 +260,10 @@ await this.masterRecordService.upsert(masterRecordData);
         ndaApproved: ndaApproved,
       });
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
       const masterRecordData = {
   ...updatedAppointment,
-  recordType: 'preapproval' as const,
+  recordType: 'Pre-Approval' as const,
   visitorId: undefined,
   appointmentId: updatedAppointment.id,
 };
@@ -305,10 +305,10 @@ await this.masterRecordService.upsert(masterRecordData);
         SaftyApproval: SaftyApproval,
       });
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
       const masterRecordData = {
         ...updatedAppointment,
-        recordType: 'preapproval' as const,
+        recordType: 'Pre-Approval' as const,
         visitorId: undefined,
         appointmentId: updatedAppointment.id
       };
@@ -346,10 +346,10 @@ await this.masterRecordService.upsert(masterRecordData);
         // Add specific gatepass logic if needed; assuming no status change for simplicity
       });
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
      const masterRecordData = {
   ...updatedAppointment,
-  recordType: 'preapproval' as const,
+  recordType: 'Pre-Approval' as const,
   visitorId: undefined,
   appointmentId: updatedAppointment.id,
 };
@@ -417,7 +417,7 @@ await this.masterRecordService.upsert(masterRecordData);
  
       const savedAppointment = await queryRunner.manager.save(Appointment, appointment);
  
-      // Save to MasterRecord with recordType 'preapproval'
+      // Save to MasterRecord with recordType 'Pre-Approval'
      const {
   firstname, lastname, gender, contactnumber, email, date, time,
   nationalid, photo, visit, personname,personnameid, department, durationtime,
@@ -432,7 +432,7 @@ const masterRecordData: Partial<MasterRecord> = {
   durationunit, visitortype, vehicletype, vehiclenumber, drivername,
   drivermobile, drivernationalid, driverphoto, notes, isformcompleted,
   isApproved, inprogress, complete, exit,SaftyApproval,ndaApproved,
-  recordType: 'preapproval',
+  recordType: 'Pre-Approval',
   visitorId: undefined,
   appointmentId: savedAppointment.id
 };
