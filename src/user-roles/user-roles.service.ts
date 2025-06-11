@@ -114,6 +114,16 @@ export class UserRolesService {
           isDeleteDisplay: true,
           isExecuteDisplay: true,
         },
+
+        {
+          permissionName: 'Totalvisitorpasses',
+          isMaster: true,
+          isReadDisplay: true,
+          isCreateDisplay: true,
+          isUpdateDisplay: true,
+          isDeleteDisplay: true,
+          isExecuteDisplay: true,
+        },
         
       ];
 
