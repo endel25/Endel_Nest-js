@@ -1,4 +1,3 @@
-// master-record.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,15 +5,15 @@ import { MasterRecord } from './master-record.entity';
 
 @Injectable()
 export class MasterRecordService {
-
   constructor(
     @InjectRepository(MasterRecord)
     private masterRecordRepository: Repository<MasterRecord>,
   ) {}
 
   async deleteByAppointmentId(appointmentId: number): Promise<void> {
-  await this.masterRecordRepository.delete({ appointmentId });
-}
+    await this.masterRecordRepository.delete({ appointmentId });
+  }
+
   async upsert(masterRecord: Partial<MasterRecord>): Promise<MasterRecord> {
     let existingRecord: MasterRecord | null = null;
 
@@ -35,8 +34,12 @@ export class MasterRecordService {
     }
 
     if (existingRecord) {
-      const updated = Object.assign(existingRecord, masterRecord);
-      return await this.masterRecordRepository.save(updated);
+      // Update the existing record using update method to avoid duplicate key issues
+      await this.masterRecordRepository.update(
+        { id: existingRecord.id },
+        { ...masterRecord, id: existingRecord.id }
+      );
+      return await this.masterRecordRepository.findOneOrFail({ where: { id: existingRecord.id } });
     } else {
       const newRecord = this.masterRecordRepository.create(masterRecord);
       return await this.masterRecordRepository.save(newRecord);
